@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-800 min-h-screen flex items-center justify-center">
+
+  <div class="bg-white shadow-lg rounded-lg p-6 max-w-sm w-full">
+    <h1 class="text-2xl font-bold text-center mb-4">Stopwatch</h1>
+    <div id="timer" class="text-4xl font-mono text-center mb-4">00:00:00</div>
+    
+    <div class="flex justify-center space-x-2 mb-4">
+      <button id="startBtn" class="bg-black text-white px-4 py-2 rounded ">
+        Start
+      </button>
+      <button id="pauseBtn" class="bg-black text-white px-4 py-2 rounded">
+        Pause
+      </button>
+      <button id="resetBtn" class="bg-black text-white px-4 py-2 rounded">
+        Reset
+      </button>
+    </div>
+
+    <div class="flex justify-center">
+      <button id="lapBtn" class="bg-black text-white px-4 py-2 rounded ">
+        Lap
+      </button>
+    </div>
+
+    <ul id="laps" class="mt-6 space-y-2 text-gray-600 font-mono">
+      <!-- lap times are displayed  -->
+    </ul>
+  </div>
+
+  <script>
+    let startTime = 0, elapsedTime = 30*60* 1000, timerInterval;
+const timerElement = document.getElementById("timer");
+const lapsElement = document.getElementById("laps");
+
+function formatTime(time) {
+  const date = new Date(time);
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  const milliseconds = String(date.getMilliseconds()).slice(0, 2).padStart(2, "0");
+  return `${minutes}:${seconds}:${milliseconds}`;
+}
+
+// Set initial display to 30 minutes
+timerElement.textContent = formatTime(elapsedTime);
+
+function updateTimer() {
+  const currentTime = Date.now();
+  elapsedTime = currentTime - startTime;
+  timerElement.textContent = formatTime(elapsedTime);
+}
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (!timerInterval) {
+    startTime = Date.now() - elapsedTime;
+    timerInterval = setInterval(updateTimer, 10);
+  }
+});
+
+document.getElementById("pauseBtn").addEventListener("click", () => {
+  clearInterval(timerInterval);
+  timerInterval = null;
+});
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  elapsedTime = 30 * 60 * 1000; // Reset to 30 minutes
+  timerElement.textContent = formatTime(elapsedTime);
+  lapsElement.innerHTML = "";
+});
+
+document.getElementById("lapBtn").addEventListener("click", () => {
+  if (elapsedTime > 0) {
+    const lapTime = formatTime(elapsedTime);
+    const li = document.createElement("li");
+    li.textContent = `Lap ${lapsElement.children.length + 1}: ${lapTime}`;
+    lapsElement.appendChild(li);
+  }
+});
+
+  </script>
+</body>
+</html>
